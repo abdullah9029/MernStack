@@ -36,3 +36,133 @@
     transform: rotate(360deg);
   }
 }
+
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 20px;
+}
+
+.form-container {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 500px;
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.title {
+  color: #333;
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.profile-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin: 0 auto;
+  font-weight: bold;
+}
+
+.detail-item {
+  margin-bottom: 20px;
+}
+
+.label {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.value {
+  color: #333;
+  font-size: 1.1rem;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  margin-top: 20px;
+}
+
+.add-recipe-button {
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
+  margin-bottom: 20px;
+}
+
+.recipe-form {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+}
+
+.input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #e9ecef;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #e9ecef;
+  border-radius: 5px;
+  font-size: 1rem;
+  min-height: 100px;
+}
+
+.loading {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.recipe-list {
+  margin-top: 30px;
+}
+
+.recipe {
+  padding: 15px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.recipe-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}

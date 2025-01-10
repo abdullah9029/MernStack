@@ -46,6 +46,16 @@ app.get('/api/todoAppdb/GetNotes', async (req, res) => {
 require("./userDetails");  
 const User = mongoose.model("registeredUserdb");  
 
+// Recipe Schema
+const recipeSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'registeredUserdb', required: true },
+    title: { type: String, required: true },
+    ingredients: { type: String, required: true },
+    instructions: { type: String, required: true }
+});
+
+const Recipe = mongoose.model('Recipe', recipeSchema);
+
 app.post("/register", async (req, res) => {  
     const { FirstName, LastName, Email, Password } = req.body;  
 
@@ -110,6 +120,36 @@ app.post("/login", async (req, res) => {
     }  
 });  
 
+// Recipe Routes
+app.post('/api/recipes', async (req, res) => {  
+    console.log("Received recipe data:", req.body); // Log incoming data  
+    try {  
+        const { userId, title, ingredients, instructions } = req.body;  
+        // Check if any required fields are missing  
+        if (!userId || !title || !ingredients || !instructions) {  
+            return res.status(400).json({ status: "error", message: "All fields are required" });  
+        }  
+        
+        const recipe = new Recipe({ userId, title, ingredients, instructions });  
+        const savedRecipe = await recipe.save();  
+        res.status(201).json({ status: "ok", recipe: savedRecipe });  
+    } catch (error) {  
+        console.error("Error creating recipe:", error);  
+        res.status(500).json({ status: "error", message: error.message });  
+    }  
+});
+
+
+app.get('/api/recipes/:userId', async (req, res) => {
+    try {
+        const recipes = await Recipe.find({ userId: req.params.userId });
+        res.json(recipes);
+    } catch (error) {
+        console.error("Error fetching recipes:", error);
+        res.status(500).json({ status: "error", message: error.message });
+    }
+});
+
 mongoose.connect(CONNECTION_STRING, {  
     useNewUrlParser: true,  
     useUnifiedTopology: true,  
@@ -117,3 +157,5 @@ mongoose.connect(CONNECTION_STRING, {
     socketTimeoutMS: 45000,   
 }).then(() => console.log("Mongoose connected successfully"))  
   .catch(error => console.error("Error connecting to Mongoose:", error));
+
+// Ensure mongoose is connected before using it  

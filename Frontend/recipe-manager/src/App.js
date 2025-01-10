@@ -19,13 +19,19 @@ function App() {
                 <Header />
                 <Login />
                 <Main />
-                <UserPage />
               </>
             }
           />
-          <Route path="/UserPage" Component={<UserPage />}>
-            {" "}
-          </Route>
+          <Route
+            path="/UserPage"
+            element={
+              <>
+                {" "}
+                <UserPage />
+                <Main />
+              </>
+            }
+          />
         </Routes>
       </div>
     </Router>

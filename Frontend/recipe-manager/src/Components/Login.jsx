@@ -81,7 +81,7 @@ function Login() {
       setisWrong(false);
       setIsDuplicate(false);
       setIsSuccess(true);
-      //navigate("/UserPage");
+      navigate("/UserPage");
 
       if (isSignUp) {
         setMessage("SignUp Successful!");
