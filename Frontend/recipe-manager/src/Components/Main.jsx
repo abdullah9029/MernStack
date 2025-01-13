@@ -21,7 +21,6 @@ function Main() {
         console.log("Fetched Data: ", data);
       } catch (err) {
         setError(err.message);
-
         setLoading(false);
       }
     };
