@@ -88,8 +88,6 @@ function Login() {
       } else {
         setMessage("Login Successful!");
       }
-
-      // Optionally, redirect user or perform other actions
     } catch (error) {
       setMessage("Invalid Email or Password");
       setisWrong(true);

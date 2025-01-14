@@ -8,12 +8,68 @@ const UserPage = () => {
   const [publicRecipes, setPublicRecipes] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState(null);
+  const [showProfileDialog, setShowProfileDialog] = useState(false);
+  const [editedName, setEditedName] = useState({
+    FirstName: "",
+    LastName: "",
+  });
   const [newRecipe, setNewRecipe] = useState({
     title: "",
     ingredients: "",
     instructions: "",
     isPublic: false,
   });
+
+  const [activeMenu, setActiveMenu] = useState(null);
+
+  const buttonStyle = {
+    padding: "8px 16px",
+    borderRadius: "4px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "14px",
+    transition: "all 0.3s ease",
+    margin: "5px",
+  };
+
+  const menuButtonStyle = {
+    background: "transparent",
+    border: "none",
+    fontSize: "20px",
+    cursor: "pointer",
+    padding: "5px 10px",
+    borderRadius: "50%",
+    transition: "background 0.3s ease",
+    verticalAlign: "middle",
+    ":hover": {
+      background: "#f0f0f0",
+    },
+  };
+
+  const dropdownStyle = {
+    position: "absolute",
+    right: "0",
+    top: "100%",
+    backgroundColor: "white",
+    boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+    borderRadius: "4px",
+    padding: "5px 0",
+    zIndex: 1000,
+  };
+
+  const dropdownButtonStyle = {
+    display: "block",
+    width: "100%",
+    padding: "8px 15px",
+    border: "none",
+    background: "none",
+    textAlign: "left",
+    cursor: "pointer",
+    fontSize: "14px",
+    ":hover": {
+      backgroundColor: "#f5f5f5",
+    },
+  };
 
   const navigate = useNavigate();
 
@@ -34,11 +90,32 @@ const UserPage = () => {
     if (loggedInUser) {
       const parsedUser = JSON.parse(loggedInUser);
       setUser(parsedUser);
-      fetchPrivateRecipes(parsedUser.id);
+      setEditedName({
+        FirstName: parsedUser.FirstName,
+        LastName: parsedUser.LastName,
+      });
+      fetchPrivateRecipes(parsedUser._id);
     }
 
     fetchPublicRecipes();
   }, [navigate]);
+
+  const handleUpdateProfile = async () => {
+    try {
+      const response = await axios.put(
+        `http://localhost:2000/api/users/${user._id}`,
+        editedName
+      );
+      const updatedUser = { ...user, ...editedName };
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setShowProfileDialog(false);
+      alert("Profile updated successfully!");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Failed to update profile. Please try again.");
+    }
+  };
 
   const fetchPrivateRecipes = async (userId) => {
     try {
@@ -60,8 +137,9 @@ const UserPage = () => {
     e.preventDefault();
     const loggedInUser = localStorage.getItem("user");
     const parsedUser = JSON.parse(loggedInUser);
+    console.log(parsedUser._id);
 
-    if (!parsedUser || !parsedUser.id) {
+    if (!parsedUser || !parsedUser._id) {
       console.error("User ID is not available.");
       alert("User ID is not available. Please log in.");
       return;
@@ -69,7 +147,7 @@ const UserPage = () => {
 
     try {
       const response = await axios.post("http://localhost:2000/api/recipes", {
-        userId: parsedUser.id,
+        userId: parsedUser._id,
         title: newRecipe.title,
         ingredients: newRecipe.ingredients,
         instructions: newRecipe.instructions,
@@ -119,6 +197,7 @@ const UserPage = () => {
         alert("Failed to delete recipe. Please try again.");
       }
     }
+    setActiveMenu(null);
   };
 
   const handleEditRecipe = (recipe) => {
@@ -129,7 +208,9 @@ const UserPage = () => {
       instructions: recipe.instructions,
       isPublic: recipe.isPublic || false,
     });
+    console.log(newRecipe.isPublic);
     setShowAddForm(true);
+    setActiveMenu(null);
   };
 
   const handleUpdateRecipe = async (e) => {
@@ -192,28 +273,65 @@ const UserPage = () => {
       <div className="content-container">
         <div className="header">
           <h1 className="welcome-text">Welcome, {user.FirstName}!</h1>
-          <div className="user-avatar">
+          <div
+            className="user-avatar"
+            onClick={() => setShowProfileDialog(true)}
+            style={{ cursor: "pointer" }}
+          >
             {user.FirstName.charAt(0)}
             {user.LastName.charAt(0)}
           </div>
         </div>
 
-        <div className="user-info">
-          <div className="info-group">
-            <label className="info-label">Full Name</label>
-            <div className="info-value">
-              {user.FirstName} {user.LastName}
+        {showProfileDialog && (
+          <>
+            <div
+              className="overlay"
+              onClick={() => setShowProfileDialog(false)}
+            />
+            <div className="dialog">
+              <h2>Profile Information</h2>
+              <div className="form-group">
+                <label>First Name:</label>
+                <input
+                  type="text"
+                  value={editedName.FirstName}
+                  onChange={(e) =>
+                    setEditedName({ ...editedName, FirstName: e.target.value })
+                  }
+                />
+                <label>Last Name:</label>
+                <input
+                  type="text"
+                  value={editedName.LastName}
+                  onChange={(e) =>
+                    setEditedName({ ...editedName, LastName: e.target.value })
+                  }
+                />
+                <label>Email:</label>
+                <div className="email-display">{user.Email}</div>
+              </div>
+              <div className="button-group">
+                <button
+                  onClick={() => setShowProfileDialog(false)}
+                  className="cancel-button"
+                >
+                  Cancel
+                </button>
+                <button onClick={handleUpdateProfile} className="save-button">
+                  Save Changes
+                </button>
+              </div>
             </div>
-          </div>
-
-          <div className="info-group">
-            <label className="info-label">Email Address</label>
-            <div className="info-value">{user.Email}</div>
-          </div>
-        </div>
+          </>
+        )}
 
         <button
-          className={`add-recipe-btn ${showAddForm ? "cancel" : ""}`}
+          style={{
+            ...buttonStyle,
+            backgroundColor: showAddForm ? "#ff4444" : "#4CAF50",
+            color: "white",
+          }}
           onClick={() => {
             if (showAddForm) {
               setEditingRecipe(null);
@@ -275,7 +393,16 @@ const UserPage = () => {
                 Make this recipe public
               </label>
             </div>
-            <button className="save-btn" type="submit">
+            <button
+              style={{
+                ...buttonStyle,
+                backgroundColor: "#4CAF50",
+                color: "white",
+                width: "100%",
+                marginTop: "10px",
+              }}
+              type="submit"
+            >
               {editingRecipe ? "Update Recipe" : "Save Recipe"}
             </button>
           </form>
@@ -290,19 +417,34 @@ const UserPage = () => {
               <div key={recipe._id} className="recipe-card">
                 <div className="recipe-header">
                   <div className="recipe-title">{recipe.title}</div>
-                  <div className="recipe-actions">
+                  <div style={{ position: "relative" }}>
                     <button
-                      className="edit-btn"
-                      onClick={() => handleEditRecipe(recipe)}
+                      style={menuButtonStyle}
+                      onClick={() =>
+                        setActiveMenu(
+                          activeMenu === recipe._id ? null : recipe._id
+                        )
+                      }
                     >
-                      Edit
+                      ⋮
                     </button>
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDeleteRecipe(recipe._id, false)}
-                    >
-                      Delete
-                    </button>
+
+                    {activeMenu === recipe._id && (
+                      <div style={dropdownStyle}>
+                        <button
+                          style={dropdownButtonStyle}
+                          onClick={() => handleEditRecipe(recipe)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          style={dropdownButtonStyle}
+                          onClick={() => handleDeleteRecipe(recipe._id, false)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="recipe-section">
@@ -332,21 +474,6 @@ const UserPage = () => {
               <div key={recipe._id} className="recipe-card">
                 <div className="recipe-header">
                   <div className="recipe-title">{recipe.title}</div>
-                  <div className="recipe-actions">
-                    <button
-                      className="edit-btn"
-                      onClick={() => handleEditRecipe(recipe)}
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDeleteRecipe(recipe._id, true)}
-                    >
-                      Delete
-                    </button>
-                  </div>
                 </div>
                 <div className="recipe-section">
                   <strong className="section-label">Ingredients:</strong>
@@ -366,7 +493,15 @@ const UserPage = () => {
           )}
         </div>
 
-        <button className="sign-out-btn" onClick={handleLogout}>
+        <button
+          style={{
+            ...buttonStyle,
+            backgroundColor: "#ff4444",
+            color: "white",
+            marginTop: "20px",
+          }}
+          onClick={handleLogout}
+        >
           Sign Out
         </button>
       </div>

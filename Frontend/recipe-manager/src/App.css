@@ -208,7 +208,7 @@
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   display: flex;
   justify-content: center;
@@ -240,7 +240,7 @@
 
 .add-recipe-btn {
   padding: 10px 20px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 4px;
@@ -290,7 +290,7 @@
 
 .save-btn {
   padding: 10px 20px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 4px;
@@ -304,7 +304,7 @@
 }
 
 .section-title.public {
-  color: #4CAF50;
+  color: #4caf50;
 }
 
 .recipes-container {
@@ -347,7 +347,7 @@
 
 .edit-btn {
   padding: 5px 10px;
-  background-color: #2196F3;
+  background-color: #2196f3;
   color: white;
   border: none;
   border-radius: 4px;
@@ -395,7 +395,7 @@
 }
 
 .recipe-visibility.public {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
 }
 
@@ -407,4 +407,162 @@
   border-radius: 4px;
   cursor: pointer;
   margin-top: 20px;
+}
+
+.button-style {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  margin: 5px;
+}
+
+.menu-button-style {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 50%;
+  transition: background 0.3s ease;
+  vertical-align: middle;
+}
+
+.menu-button-style:hover {
+  background: #f0f0f0;
+}
+
+.dropdown-style {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  padding: 5px 0;
+  z-index: 1000;
+}
+
+.dropdown-button-style {
+  display: block;
+  width: 100%;
+  padding: 8px 15px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dropdown-button-style:hover {
+  background-color: #f5f5f5;
+}
+
+.sign-out-btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  margin: 5px;
+  background-color: #ff4444;
+  color: white;
+  margin-top: 20px;
+}
+
+.button-style-Add-newRecipe {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  margin: 5px;
+  background-color: #4caf50;
+  color: white;
+}
+
+.button-style-Add-newRecipe.cancel {
+  background-color: #ff4444;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  width: 300px;
+  z-index: 1001;
+}
+
+.dialog h2 {
+  margin: 0 0 15px;
+  font-size: 1.5em;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.email-display {
+  padding: 8px;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center; /* Center the buttons */
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cancel-button,
+.save-button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.cancel-button {
+  background-color: #ff4444;
+}
+
+.save-button {
+  background-color: #4caf50;
 }

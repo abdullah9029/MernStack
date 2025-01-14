@@ -59,6 +59,28 @@ const Recipe = mongoose.model('Recipe', recipeSchema);
 
 // User registration and login routes...  
 
+
+app.post('/login', async (req, res) => {  
+    const { Email, Password } = req.body;  
+
+    try {  
+        const user = await User.findOne({ Email });  
+        if (!user) {  
+            return res.status(404).send({ status: "error", message: "User not found" });  
+        }  
+
+        const isMatch = await bcrypt.compare(Password, user.Password);  
+        if (!isMatch) {  
+            return res.status(401).send({ status: "error", message: "Invalid credentials" });  
+        }  
+
+        res.send({ status: "ok", message: "Login successful", user });  
+    } catch (error) {  
+        console.error("Error logging in:", error);  
+        res.status(500).send({ status: "error", message: "Server error" });  
+    }  
+});  
+
 // Recipe Routes  
 app.post('/api/recipes', async (req, res) => {  
     console.log("Received recipe data:", req.body); // Log incoming data  

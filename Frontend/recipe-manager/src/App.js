@@ -18,7 +18,6 @@ function App() {
               <>
                 <Header />
                 <Login />
-                <Main />
               </>
             }
           />
@@ -28,7 +27,6 @@ function App() {
               <>
                 {" "}
                 <UserPage />
-                <Main />
               </>
             }
           />
