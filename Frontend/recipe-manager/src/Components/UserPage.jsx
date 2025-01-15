@@ -8,6 +8,8 @@ const UserPage = () => {
   const [publicRecipes, setPublicRecipes] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
+
   const [showProfileDialog, setShowProfileDialog] = useState(false);
   const [editedName, setEditedName] = useState({
     FirstName: "",
@@ -94,6 +96,9 @@ const UserPage = () => {
         FirstName: parsedUser.FirstName,
         LastName: parsedUser.LastName,
       });
+      if (parsedUser.profilePicture) {
+        setProfileImage(parsedUser.profilePicture);
+      }
       fetchPrivateRecipes(parsedUser._id);
     }
 
@@ -102,18 +107,52 @@ const UserPage = () => {
 
   const handleUpdateProfile = async () => {
     try {
+      const formData = new FormData();
+      formData.append("FirstName", editedName.FirstName);
+      formData.append("LastName", editedName.LastName);
+
+      if (profileImage instanceof File) {
+        formData.append("profilePicture", profileImage);
+      }
+
       const response = await axios.put(
-        `http://localhost:2000/api/users/${user._id}`,
-        editedName
+        `http://localhost:2000/api/users/${user._id}/profile-picture`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
-      const updatedUser = { ...user, ...editedName };
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      setShowProfileDialog(false);
-      alert("Profile updated successfully!");
+
+      if (response.status === 200) {
+        const updatedUser = response.data.user;
+
+        // Update the user state with new profile picture
+        setUser((prevUser) => ({
+          ...prevUser,
+          profilePicture: updatedUser.profilePicture, // Update the profile picture URL
+          FirstName: updatedUser.FirstName, // Ensure the first name is also updated
+          LastName: updatedUser.LastName, // Ensure last name is also updated
+        }));
+
+        // Save the updated user to localStorage
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+
+        setShowProfileDialog(false);
+        alert("Profile updated successfully!");
+      } else {
+        alert("Failed to update profile. Please try again.");
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
       alert("Failed to update profile. Please try again.");
+    }
+  };
+
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setProfileImage(e.target.files[0]);
     }
   };
 
@@ -273,14 +312,41 @@ const UserPage = () => {
       <div className="content-container">
         <div className="header">
           <h1 className="welcome-text">Welcome, {user.FirstName}!</h1>
-          <div
-            className="user-avatar"
+          <button
+            className="profile-button"
             onClick={() => setShowProfileDialog(true)}
-            style={{ cursor: "pointer" }}
+            style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              border: "none",
+              padding: 0,
+              overflow: "hidden",
+              cursor: "pointer",
+              backgroundColor: user.profilePicture ? "transparent" : "#4CAF50",
+              color: "white",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
-            {user.FirstName.charAt(0)}
-            {user.LastName.charAt(0)}
-          </div>
+            {user.profilePicture ? (
+              <img
+                src={`http://localhost:2000${user.profilePicture}`}
+                alt="Profile"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            ) : (
+              <>
+                {user.FirstName.charAt(0)}
+                {user.LastName.charAt(0)}
+              </>
+            )}
+          </button>
         </div>
 
         {showProfileDialog && (
@@ -292,6 +358,29 @@ const UserPage = () => {
             <div className="dialog">
               <h2>Profile Information</h2>
               <div className="form-group">
+                <label>Profile Picture:</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+                {profileImage && (
+                  <img
+                    src={
+                      profileImage instanceof File
+                        ? URL.createObjectURL(profileImage)
+                        : `http://localhost:2000${profileImage}`
+                    }
+                    alt="Profile Preview"
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      objectFit: "cover",
+                      marginTop: "10px",
+                      borderRadius: "50%",
+                    }}
+                  />
+                )}
                 <label>First Name:</label>
                 <input
                   type="text"

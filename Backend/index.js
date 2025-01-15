@@ -4,18 +4,51 @@ const cors = require("cors");
 require('dotenv').config();  
 const mongoose = require("mongoose");  
 const bcrypt = require('bcrypt');   
+const multer = require('multer');
+const path = require('path');
 
 const port = 2000;  
 const app = express();  
+
+
+
 
 app.use(cors({  
     origin: '*'  
 }));  
 app.use(express.json());  
+app.use('/uploads', express.static('uploads')); // Serve uploaded files statically
 
 const CONNECTION_STRING = process.env.MonogURL;  
 const DATABASE = 'todoAppdb';  
 let database;  
+
+// Configure multer for file upload
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function(req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ 
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    },
+    fileFilter: function(req, file, cb) {
+        const filetypes = /jpeg|jpg|png/;
+        const mimetype = filetypes.test(file.mimetype);
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        
+        if (mimetype && extname) {
+            return cb(null, true);
+        }
+        cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+    }
+});
 
 async function connectToDatabase() {  
     console.log("Attempting to connect to MongoDB...");  
@@ -59,7 +92,6 @@ const Recipe = mongoose.model('Recipe', recipeSchema);
 
 // User registration and login routes...  
 
-
 app.post('/login', async (req, res) => {  
     const { Email, Password } = req.body;  
 
@@ -100,6 +132,78 @@ app.post('/api/recipes', async (req, res) => {
     }  
 });  
 
+// Update user profile with profile picture
+app.put('/api/users/:id/profile-picture', upload.single('profilePicture'), async (req, res) => {  
+    try {  
+        if (!req.file) {  
+            return res.status(400).json({ message: 'No file uploaded' });  
+        }  
+
+        // Simulate updating user in the database (replace with your actual update logic)  
+        const updatedUser = await User.findByIdAndUpdate(  
+            req.params.id,  
+            {   
+                profilePicture: `/uploads/${req.file.filename}`,  
+                FirstName: req.body.FirstName || undefined,  
+                LastName: req.body.LastName || undefined  
+            },  
+            { new: true }  
+        );  
+
+        if (!updatedUser) {  
+            return res.status(404).json({ message: 'User not found' });  
+        }  
+
+        res.status(200).json({  
+            message: 'Profile updated successfully',  
+            user: updatedUser  
+        });  
+    } catch (error) {  
+        console.error("Error updating profile:", error); // Log the error details  
+        res.status(500).json({ message: 'Error updating profile', error: error.message }); // Send the error message back for easier debugging  
+    }  
+});
+
+app.put('/api/users/:id', async (req, res) => {  
+  const { FirstName, LastName } = req.body; // Get the new names from the request body  
+  try {  
+    const updatedUser = await User.findByIdAndUpdate(  
+      req.params.id,  
+      { FirstName, LastName }, // Update the fields  
+      { new: true } // Return the updated object  
+    );  
+
+    if (!updatedUser) {  
+      return res.status(404).json({ message: 'User not found' });  
+    }  
+
+    res.status(200).json(updatedUser); // Send back the updated user  
+  } catch (error) {  
+    console.error("Error updating user:", error);  
+    res.status(500).json({ message: 'Error updating profile' });  
+  }  
+});
+
+
+// PUT endpoint to update user profile  
+// app.put('/api/users/:id', async (req, res) => {  
+//   try {  
+//     const { id } = req.params;  
+//     const { FirstName } = req.body;  
+
+//     // Find the user by ID and update their name  
+//     const updatedUser = await User.findByIdAndUpdate(id, { FirstName }, { new: true });  
+
+//     if (!updatedUser) {  
+//       return res.status(404).json({ message: 'User not found' });  
+//     }  
+
+//     res.status(200).json(updatedUser);  
+//   } catch (error) {  
+//     console.error("Error updating user:", error);  
+//     res.status(500).json({ message: 'Error updating profile' });  
+//   }  
+// });
 
 app.post("/register", async (req, res) => {  
     const { FirstName, LastName, Email, Password } = req.body;  
