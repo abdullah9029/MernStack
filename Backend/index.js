@@ -26,10 +26,11 @@ let database;
 // Configure multer for file upload
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, 'uploads/');
+        cb(null, 'uploads');
     },
     filename: function(req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
+        // Use user's ID as filename while preserving file extension
+        cb(null, req.params.id + path.extname(file.originalname));
     }
 });
 

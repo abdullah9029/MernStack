@@ -9,6 +9,7 @@ const UserPage = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
+  const img = "http://localhost:2000/uploads";
 
   const [showProfileDialog, setShowProfileDialog] = useState(false);
   const [editedName, setEditedName] = useState({
@@ -140,6 +141,8 @@ const UserPage = () => {
         localStorage.setItem("user", JSON.stringify(updatedUser));
 
         setShowProfileDialog(false);
+        const imgPath = `${img}/${user._id}.jpg`;
+        console.log(imgPath);
         alert("Profile updated successfully!");
       } else {
         alert("Failed to update profile. Please try again.");
@@ -330,22 +333,15 @@ const UserPage = () => {
               justifyContent: "center",
             }}
           >
-            {user.profilePicture ? (
-              <img
-                src={`http://localhost:2000${user.profilePicture}`}
-                alt="Profile"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-              />
-            ) : (
-              <>
-                {user.FirstName.charAt(0)}
-                {user.LastName.charAt(0)}
-              </>
-            )}
+            <img
+              src={`${img}/${user._id}.jpg`}
+              alt="Profile"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
           </button>
         </div>
 
